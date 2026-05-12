@@ -28,4 +28,10 @@ describe('getRevenueDateRange', () => {
     expect(r.displayStart).toBe('2021-01');
     expect(r.fetchStart).toBe('2020-01-01');
   });
+
+  it('fetch range adds exactly 12 months of lookback before displayStart', () => {
+    const r = getRevenueDateRange(5, new Date('2026-05-12'));
+    // displayStart 2021-05 → fetchStart should be 2020-05
+    expect(r.fetchStart).toBe('2020-05-01');
+  });
 });
