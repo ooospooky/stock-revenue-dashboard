@@ -9,4 +9,8 @@ describe('calculateYoY', () => {
   it('returns negative percentage when current shrank', () => {
     expect(calculateYoY(80, 100)).toBeCloseTo(-20);
   });
+
+  it('returns -100 when current is zero (legitimate, not null)', () => {
+    expect(calculateYoY(0, 100)).toBe(-100);
+  });
 });
