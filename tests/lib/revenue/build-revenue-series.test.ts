@@ -37,4 +37,14 @@ describe('buildRevenueSeries', () => {
       { date: '2021-03', revenue: 5000, yoy: null },
     ]);
   });
+
+  it('excludes lookback rows from result even if data exists', () => {
+    const raw = [
+      row('2020-12-01', 1000_000),
+      row('2021-01-01', 1100_000),
+      row('2021-02-01', 1200_000),
+    ];
+    const out = buildRevenueSeries(raw, '2021-01', '2021-02');
+    expect(out.map((p) => p.date)).toEqual(['2021-01', '2021-02']);
+  });
 });
