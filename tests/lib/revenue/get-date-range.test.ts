@@ -16,4 +16,9 @@ describe('getRevenueDateRange', () => {
     expect(r.displayStart).toBe('2023-05');
     expect(r.displayEnd).toBe('2026-04');
   });
+
+  it('8-year preset works', () => {
+    const r = getRevenueDateRange(8, new Date('2026-05-12'));
+    expect(r.displayStart).toBe('2018-05');
+  });
 });
