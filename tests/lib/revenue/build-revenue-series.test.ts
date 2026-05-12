@@ -47,4 +47,14 @@ describe('buildRevenueSeries', () => {
     const out = buildRevenueSeries(raw, '2021-01', '2021-02');
     expect(out.map((p) => p.date)).toEqual(['2021-01', '2021-02']);
   });
+
+  it('sorts output by date ascending even if input is shuffled', () => {
+    const raw = [
+      row('2021-03-01', 3000_000),
+      row('2021-01-01', 1000_000),
+      row('2021-02-01', 2000_000),
+    ];
+    const dates = buildRevenueSeries(raw, '2021-01', '2021-03').map((p) => p.date);
+    expect(dates).toEqual(['2021-01', '2021-02', '2021-03']);
+  });
 });
