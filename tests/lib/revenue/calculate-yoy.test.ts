@@ -13,4 +13,8 @@ describe('calculateYoY', () => {
   it('returns -100 when current is zero (legitimate, not null)', () => {
     expect(calculateYoY(0, 100)).toBe(-100);
   });
+
+  it('returns null when previousYear is zero (division undefined)', () => {
+    expect(calculateYoY(100, 0)).toBeNull();
+  });
 });
