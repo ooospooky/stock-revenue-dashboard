@@ -21,4 +21,11 @@ describe('getRevenueDateRange', () => {
     const r = getRevenueDateRange(8, new Date('2026-05-12'));
     expect(r.displayStart).toBe('2018-05');
   });
+
+  it('January boundary: displayEnd is previous December', () => {
+    const r = getRevenueDateRange(5, new Date('2026-01-15'));
+    expect(r.displayEnd).toBe('2025-12');
+    expect(r.displayStart).toBe('2021-01');
+    expect(r.fetchStart).toBe('2020-01-01');
+  });
 });
