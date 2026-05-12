@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
