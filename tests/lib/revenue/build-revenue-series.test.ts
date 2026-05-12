@@ -30,4 +30,11 @@ describe('buildRevenueSeries', () => {
       { date: '2021-06', revenue: 1000, yoy: null },
     ]);
   });
+
+  it('returns yoy=null when previous-year revenue is 0', () => {
+    const raw = [row('2020-03-01', 0), row('2021-03-01', 5_000_000)];
+    expect(buildRevenueSeries(raw, '2021-03', '2021-03')).toEqual([
+      { date: '2021-03', revenue: 5000, yoy: null },
+    ]);
+  });
 });
