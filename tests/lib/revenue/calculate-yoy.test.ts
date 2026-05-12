@@ -21,4 +21,9 @@ describe('calculateYoY', () => {
   it('returns null when previousYear is negative', () => {
     expect(calculateYoY(100, -50)).toBeNull();
   });
+
+  it('returns null when previousYear is missing', () => {
+    expect(calculateYoY(100, undefined)).toBeNull();
+    expect(calculateYoY(100, null)).toBeNull();
+  });
 });
