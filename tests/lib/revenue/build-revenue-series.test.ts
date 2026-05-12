@@ -23,4 +23,11 @@ describe('buildRevenueSeries', () => {
     expect(result[0].revenue).toBe(1100);
     expect(result[0].yoy).toBeCloseTo(10);
   });
+
+  it('returns yoy=null when previous year row is missing from raw data', () => {
+    const raw = [row('2021-06-01', 1000_000)]; // no 2020-06 row
+    expect(buildRevenueSeries(raw, '2021-06', '2021-06')).toEqual([
+      { date: '2021-06', revenue: 1000, yoy: null },
+    ]);
+  });
 });
