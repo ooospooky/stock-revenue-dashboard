@@ -57,4 +57,8 @@ describe('buildRevenueSeries', () => {
     const dates = buildRevenueSeries(raw, '2021-01', '2021-03').map((p) => p.date);
     expect(dates).toEqual(['2021-01', '2021-02', '2021-03']);
   });
+
+  it('returns empty array when raw is empty', () => {
+    expect(buildRevenueSeries([], '2021-01', '2021-12')).toEqual([]);
+  });
 });
