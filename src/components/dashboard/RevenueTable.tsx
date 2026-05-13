@@ -1,22 +1,48 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { Box, Stack, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
+import {
+  Box,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from '@mui/material';
 import type { RevenuePoint } from '@/lib/revenue/types';
-import { formatThousand, formatYoYPercent } from '@/lib/format';
+import { formatRevenueFullAmount, formatYoYPercent } from '@/lib/format';
 import { SectionLabel } from './SectionLabel';
 
-const STRIPE_SX = { bgcolor: 'tableStripe.main' };
+type RevenueTableProps = {
+  data: RevenuePoint[];
+  stockId: string;
+  range: number;
+};
+
+type RevenueTableRowConfig = {
+  id: 'date' | 'revenue' | 'yoy';
+  label: string;
+  isStriped: boolean;
+  formatValue: (point: RevenuePoint) => string;
+  dataCellFontWeight: 'fontWeightMedium' | 'fontWeightRegular';
+};
+
+const ROW_LABEL_COLUMN_WIDTH = 160;
 
 const ROW_LABEL_CELL_SX = {
   position: 'sticky',
   left: 0,
-  bgcolor: 'inherit', // inherits the row's stripe color — do not set an explicit value here
-  fontWeight: 600,
+  minWidth: ROW_LABEL_COLUMN_WIDTH,
+  width: ROW_LABEL_COLUMN_WIDTH,
+  maxWidth: ROW_LABEL_COLUMN_WIDTH,
+  fontWeight: 'fontWeightMedium',
   zIndex: 2,
   borderRight: '1px solid',
   borderColor: 'divider',
   whiteSpace: 'nowrap',
-};
+  pr: 2,
+} satisfies SxProps<Theme>;
 
 const DATA_CELL_SX = {
   textAlign: 'right',
@@ -24,19 +50,77 @@ const DATA_CELL_SX = {
   borderRight: '1px solid',
   borderColor: 'divider',
   whiteSpace: 'nowrap',
-};
+} satisfies SxProps<Theme>;
 
-const LAST_CELL_SX = { ...DATA_CELL_SX, borderRight: 'none' };
+const LAST_CELL_SX = {
+  ...DATA_CELL_SX,
+  borderRight: 'none',
+} satisfies SxProps<Theme>;
 
-export const RevenueTable = ({
+const TABLE_SX = {
+  width: 'max-content',
+  minWidth: 'max-content',
+  tableLayout: 'auto',
+  borderCollapse: 'separate',
+  borderSpacing: 0,
+} satisfies SxProps<Theme>;
+
+const TABLE_ROWS: RevenueTableRowConfig[] = [
+  {
+    id: 'date',
+    label: '年度月份',
+    isStriped: true,
+    formatValue: (point) => point.date.replace('-', ''),
+    dataCellFontWeight: 'fontWeightMedium',
+  },
+  {
+    id: 'revenue',
+    label: '每月營收',
+    isStriped: false,
+    formatValue: (point) => formatRevenueFullAmount(point.revenue),
+    dataCellFontWeight: 'fontWeightRegular',
+  },
+  {
+    id: 'yoy',
+    label: '單月營收年增率 (%)',
+    isStriped: true,
+    formatValue: (point) => formatYoYPercent(point.yoy),
+    dataCellFontWeight: 'fontWeightRegular',
+  },
+];
+
+const RevenueTableRowItem = ({
   data,
-  stockId,
-  range,
+  row,
 }: {
   data: RevenuePoint[];
-  stockId: string;
-  range: number;
-}) => {
+  row: RevenueTableRowConfig;
+}) => (
+  <TableRow sx={row.isStriped ? { bgcolor: 'tableStripe.main' } : undefined}>
+    <TableCell
+      sx={{
+        ...ROW_LABEL_CELL_SX,
+        bgcolor: row.isStriped ? 'tableStripe.main' : 'background.paper',
+        boxShadow: (theme) => `1px 0 0 ${theme.palette.divider}`,
+      }}
+    >
+      {row.label}
+    </TableCell>
+    {data.map((point, index) => (
+      <TableCell
+        key={`${row.id}-${point.date}`}
+        sx={{
+          ...(index === data.length - 1 ? LAST_CELL_SX : DATA_CELL_SX),
+          fontWeight: row.dataCellFontWeight,
+        }}
+      >
+        {row.formatValue(point)}
+      </TableCell>
+    ))}
+  </TableRow>
+);
+
+export const RevenueTable = ({ data, stockId, range }: RevenueTableProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const latestDate = data[data.length - 1]?.date;
 
@@ -46,35 +130,20 @@ export const RevenueTable = ({
     }
   }, [stockId, range, latestDate]);
 
-  const lastIndex = data.length - 1;
-
-  const renderRow = (
-    label: string,
-    formatter: (p: RevenuePoint) => string,
-    stripe: boolean,
-  ) => (
-    <TableRow sx={stripe ? STRIPE_SX : undefined}>
-      <TableCell sx={ROW_LABEL_CELL_SX}>{label}</TableCell>
-      {data.map((p, idx) => (
-        <TableCell key={p.date} sx={idx === lastIndex ? LAST_CELL_SX : DATA_CELL_SX}>
-          {formatter(p)}
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-
   return (
     <Stack spacing={2}>
-      <SectionLabel>詳細數據</SectionLabel>
-      <Box ref={scrollRef} sx={{ overflowX: 'auto' }}>
-        <Table size="small" sx={{ tableLayout: 'auto' }}>
+      <Box sx={{ alignSelf: 'flex-start' }}>
+        <SectionLabel>詳細數據</SectionLabel>
+      </Box>
+      <TableContainer ref={scrollRef} sx={{ overflowX: 'auto' }}>
+        <Table size="small" sx={TABLE_SX}>
           <TableBody>
-            {renderRow('年度月份', (p) => p.date.replace('-', ''), true)}
-            {renderRow('每月營收', (p) => formatThousand(p.revenue), false)}
-            {renderRow('單月營收年增率 (%)', (p) => formatYoYPercent(p.yoy), true)}
+            {TABLE_ROWS.map((row) => (
+              <RevenueTableRowItem key={row.id} data={data} row={row} />
+            ))}
           </TableBody>
         </Table>
-      </Box>
+      </TableContainer>
     </Stack>
   );
 };
