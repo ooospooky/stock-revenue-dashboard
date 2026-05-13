@@ -36,8 +36,8 @@ describe('RevenueTable', () => {
 
   it('formats date column as YYYYMM', () => {
     renderTable();
-    expect(screen.getByText('202401')).toHaveStyle({ fontWeight: '600' });
-    expect(screen.getByText('202402')).toHaveStyle({ fontWeight: '600' });
+    expect(screen.getByText('202401')).toHaveStyle({ fontWeight: '500' });
+    expect(screen.getByText('202402')).toHaveStyle({ fontWeight: '500' });
   });
 
   it('renders monthly revenue as full amount in NTD', () => {

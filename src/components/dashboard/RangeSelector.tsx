@@ -21,7 +21,7 @@ export const RangeSelector = () => {
       sx={{
         bgcolor: 'primary.main',
         color: 'primary.contrastText',
-        fontWeight: 500,
+        fontWeight: 'fontWeightMedium',
         fontSize: '0.875rem',
         borderRadius: 0.375,
         '& .MuiSelect-icon': { color: 'primary.contrastText' },

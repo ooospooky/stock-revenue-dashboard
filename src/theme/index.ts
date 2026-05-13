@@ -17,6 +17,12 @@ declare module '@mui/material/styles' {
     yoy?: { positive: string; negative: string };
     tableStripe?: { main: string };
   }
+  interface TypographyVariants {
+    fontWeightSemibold: number;
+  }
+  interface TypographyVariantsOptions {
+    fontWeightSemibold?: number;
+  }
 }
 
 export const theme = createTheme({
@@ -34,7 +40,8 @@ export const theme = createTheme({
   typography: {
     fontFamily: 'var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif',
     fontWeightRegular: 400,
-    fontWeightMedium: 600,
+    fontWeightMedium: 500,
+    fontWeightSemibold: 600,
     h1: { fontSize: '1.5rem', fontWeight: 600 },
     h2: { fontSize: '1.25rem', fontWeight: 600 },
     body2: { fontSize: '0.875rem' },

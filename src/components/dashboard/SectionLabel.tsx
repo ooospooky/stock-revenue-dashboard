@@ -14,7 +14,7 @@ export const SectionLabel = ({ children }: { children: ReactNode }) => (
       px: 2,
       py: 1.25,
       fontSize: '0.875rem',
-      fontWeight: 500,
+      fontWeight: 'fontWeightMedium',
       lineHeight: 1,
       userSelect: 'none',
     }}
