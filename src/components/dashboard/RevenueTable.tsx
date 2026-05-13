@@ -77,7 +77,7 @@ const TABLE_ROWS: RevenueTableRowConfig[] = [
     id: 'revenue',
     label: '每月營收',
     isStriped: false,
-    formatValue: (point) => formatRevenueFullAmount(point.revenue),
+    formatValue: (point) => formatRevenueFullAmount(point.revenueInThousands),
     dataCellFontWeight: 'fontWeightRegular',
   },
   {

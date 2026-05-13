@@ -24,7 +24,7 @@ export const buildRevenueSeries = (
     const prev = byMonth.get(previousYear(ym));
     points.push({
       date: ym,
-      revenue: r.revenue / 1000,
+      revenueInThousands: r.revenue / 1000,
       yoy: calculateYoY(r.revenue, prev),
     });
   }

@@ -36,8 +36,8 @@ const numberFormatter = (
 export const formatThousand = (value: number): string =>
   new Intl.NumberFormat('en-US').format(value);
 
-export const formatRevenueFullAmount = (valueInThousand: number): string =>
-  formatThousand(valueInThousand * REVENUE_THOUSAND_TO_NTD_MULTIPLIER);
+export const formatRevenueFullAmount = (valueInThousands: number): string =>
+  formatThousand(valueInThousands * REVENUE_THOUSAND_TO_NTD_MULTIPLIER);
 
 export const formatYoYPercent = (value: number | null): string => {
   if (value == null) return '-';

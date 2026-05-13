@@ -15,12 +15,12 @@ export type RawRevenueRow = {
 /**
  * A point in the display series.
  * date: YYYY-MM (domain format)
- * revenue: 千元 (already divided by 1000 from the raw 元)
+ * revenueInThousands: 千元 (already divided by 1000 from the raw 元)
  * yoy: percentage (e.g. 12.34 for +12.34%); null when previousYear ≤ 0
  */
 export type RevenuePoint = {
   date: string;
-  revenue: number;
+  revenueInThousands: number;
   yoy: number | null;
 };
 

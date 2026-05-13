@@ -24,7 +24,7 @@ import { formatXAxisTick } from '@/lib/format-x-tick';
 import { SectionLabel } from './SectionLabel';
 import { RangeSelector } from './RangeSelector';
 
-type TooltipPayload = { dataKey: 'revenue' | 'yoy'; value: number | null }[];
+type TooltipPayload = { dataKey: 'revenueInThousands' | 'yoy'; value: number | null }[];
 type LegendPayloadItem = {
   dataKey?: string | number;
   value?: string;
@@ -42,7 +42,7 @@ const RevenueTooltip = ({
   revenueUnit: RevenueDisplayUnit;
 }) => {
   if (!active || !payload?.length) return null;
-  const revenue = payload.find((p) => p.dataKey === 'revenue')?.value;
+  const revenue = payload.find((p) => p.dataKey === 'revenueInThousands')?.value;
   const yoy = payload.find((p) => p.dataKey === 'yoy')?.value;
   return (
     <Box
@@ -65,19 +65,19 @@ const RevenueTooltip = ({
   );
 };
 
-const LEGEND_ITEM_ORDER: Record<'revenue' | 'yoy', number> = {
-  revenue: 0,
+const LEGEND_ITEM_ORDER: Record<'revenueInThousands' | 'yoy', number> = {
+  revenueInThousands: 0,
   yoy: 1,
 };
 
 const getLegendItemOrder = (dataKey: LegendPayloadItem['dataKey']): number => {
-  if (dataKey === 'revenue') return LEGEND_ITEM_ORDER.revenue;
+  if (dataKey === 'revenueInThousands') return LEGEND_ITEM_ORDER.revenueInThousands;
   if (dataKey === 'yoy') return LEGEND_ITEM_ORDER.yoy;
   return Number.MAX_SAFE_INTEGER;
 };
 
 const renderLegendIcon = (entry: LegendPayloadItem, theme: Theme) => {
-  if (entry.dataKey === 'revenue') {
+  if (entry.dataKey === 'revenueInThousands') {
     return (
       <Box
         component="span"
@@ -195,7 +195,7 @@ const UNIT_LABEL_RIGHT_SX = {
 export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
   const theme = useTheme();
   const revenueUnit = useMemo(
-    () => getRevenueDisplayUnit(data.map((point) => point.revenue)),
+    () => getRevenueDisplayUnit(data.map((point) => point.revenueInThousands)),
     [data],
   );
 
@@ -244,7 +244,7 @@ export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
             />
             <Bar
               yAxisId="left"
-              dataKey="revenue"
+              dataKey="revenueInThousands"
               name="每月營收"
               fill={theme.palette.revenue.fill}
               stroke={theme.palette.revenue.main}

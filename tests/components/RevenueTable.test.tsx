@@ -6,8 +6,8 @@ import { RevenueTable } from '@/components/dashboard/RevenueTable';
 import type { RevenuePoint } from '@/lib/revenue/types';
 
 const sampleData: RevenuePoint[] = [
-  { date: '2024-01', revenue: 1000, yoy: 10 },
-  { date: '2024-02', revenue: 2000, yoy: 20 },
+  { date: '2024-01', revenueInThousands: 1000, yoy: 10 },
+  { date: '2024-02', revenueInThousands: 2000, yoy: 20 },
 ];
 
 const renderTable = () =>
