@@ -1,5 +1,7 @@
 'use client';
+import { useMemo } from 'react';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
+import type { Theme } from '@mui/material/styles';
 import {
   ComposedChart,
   Bar,
@@ -12,31 +14,141 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { RevenuePoint } from '@/lib/revenue/types';
-import { formatThousand, formatYoYPercent } from '@/lib/format';
+import {
+  formatRevenueByUnit,
+  formatYoYPercent,
+  getRevenueDisplayUnit,
+} from '@/lib/format';
+import type { RevenueDisplayUnit } from '@/lib/format';
 import { formatXAxisTick } from '@/lib/format-x-tick';
 import { SectionLabel } from './SectionLabel';
 import { RangeSelector } from './RangeSelector';
 
 type TooltipPayload = { dataKey: 'revenue' | 'yoy'; value: number | null }[];
+type LegendPayloadItem = {
+  dataKey?: string | number;
+  value?: string;
+};
 
 const RevenueTooltip = ({
   active,
   payload,
   label,
+  revenueUnit,
 }: {
   active?: boolean;
   payload?: TooltipPayload;
   label?: string;
+  revenueUnit: RevenueDisplayUnit;
 }) => {
   if (!active || !payload?.length) return null;
   const revenue = payload.find((p) => p.dataKey === 'revenue')?.value;
   const yoy = payload.find((p) => p.dataKey === 'yoy')?.value;
   return (
-    <Box sx={{ bgcolor: 'background.paper', border: 1, borderColor: 'divider', p: 1, fontSize: 13 }}>
+    <Box
+      sx={{
+        bgcolor: 'background.paper',
+        border: 1,
+        borderColor: 'divider',
+        p: 1,
+        fontSize: 13,
+      }}
+    >
       <div>{label}</div>
-      <div>每月營收：{revenue != null ? formatThousand(revenue) : '-'} 千元</div>
+      <div>
+        每月營收：
+        {revenue != null ? formatRevenueByUnit(revenue, revenueUnit) : '-'}{' '}
+        {revenueUnit.label}
+      </div>
       <div>單月營收年增率：{formatYoYPercent(yoy ?? null)} %</div>
     </Box>
+  );
+};
+
+const LEGEND_ITEM_ORDER: Record<'revenue' | 'yoy', number> = {
+  revenue: 0,
+  yoy: 1,
+};
+
+const getLegendItemOrder = (dataKey: LegendPayloadItem['dataKey']): number => {
+  if (dataKey === 'revenue') return LEGEND_ITEM_ORDER.revenue;
+  if (dataKey === 'yoy') return LEGEND_ITEM_ORDER.yoy;
+  return Number.MAX_SAFE_INTEGER;
+};
+
+const renderLegendIcon = (entry: LegendPayloadItem, theme: Theme) => {
+  if (entry.dataKey === 'revenue') {
+    return (
+      <Box
+        component="span"
+        sx={{
+          width: 12,
+          height: 12,
+          borderRadius: 0.5,
+          bgcolor: theme.palette.revenue.main,
+          flexShrink: 0,
+        }}
+      />
+    );
+  }
+
+  return (
+    <Box
+      component="span"
+      sx={{
+        width: 14,
+        height: 2,
+        bgcolor: theme.palette.yoy.negative,
+        borderRadius: 999,
+        flexShrink: 0,
+      }}
+    />
+  );
+};
+
+const RevenueLegend = ({
+  payload,
+  theme,
+}: {
+  payload?: LegendPayloadItem[];
+  theme: Theme;
+}) => {
+  if (!payload?.length) return null;
+
+  const sortedPayload = [...payload].sort((firstItem, secondItem) => {
+    return (
+      getLegendItemOrder(firstItem.dataKey) -
+      getLegendItemOrder(secondItem.dataKey)
+    );
+  });
+
+  return (
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{
+        pl: `${CHART_MARGIN.left + LEFT_Y_AXIS_WIDTH}px`,
+        pb: 1,
+        flexWrap: 'wrap',
+      }}
+    >
+      {sortedPayload.map((entry) => (
+        <Stack
+          key={entry.dataKey}
+          direction="row"
+          spacing={0.75}
+          sx={{
+            alignItems: 'center',
+            color: 'text.primary',
+          }}
+        >
+          {renderLegendIcon(entry, theme)}
+          <Typography variant="body2" component="span">
+            {entry.value ?? ''}
+          </Typography>
+        </Stack>
+      ))}
+    </Stack>
   );
 };
 
@@ -47,10 +159,24 @@ const CHART_HEADER_SX = {
   gap: 1,
 };
 
+const CHART_MARGIN = {
+  top: 30,
+  right: 24,
+  bottom: 10,
+  left: 24,
+};
+
+const LEFT_Y_AXIS_WIDTH = 72;
+const RIGHT_Y_AXIS_WIDTH = 44;
+const UNIT_LABEL_PADDING = 0.5;
+
 const UNIT_LABEL_LEFT_SX = {
   position: 'absolute',
   top: 0,
-  left: 0,
+  left: CHART_MARGIN.left,
+  width: LEFT_Y_AXIS_WIDTH,
+  pr: UNIT_LABEL_PADDING,
+  textAlign: 'right',
   color: 'text.secondary',
   zIndex: 1,
 };
@@ -58,13 +184,21 @@ const UNIT_LABEL_LEFT_SX = {
 const UNIT_LABEL_RIGHT_SX = {
   position: 'absolute',
   top: 0,
-  right: 0,
+  right: CHART_MARGIN.right,
+  width: RIGHT_Y_AXIS_WIDTH,
+  pl: UNIT_LABEL_PADDING,
+  textAlign: 'left',
   color: 'text.secondary',
   zIndex: 1,
 };
 
 export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
   const theme = useTheme();
+  const revenueUnit = useMemo(
+    () => getRevenueDisplayUnit(data.map((point) => point.revenue)),
+    [data],
+  );
+
   return (
     <Stack spacing={2}>
       <Stack direction="row" sx={CHART_HEADER_SX}>
@@ -74,14 +208,14 @@ export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
 
       <Box sx={{ position: 'relative', width: '100%' }}>
         <Typography variant="body2" sx={UNIT_LABEL_LEFT_SX}>
-          千元
+          {revenueUnit.label}
         </Typography>
         <Typography variant="body2" sx={UNIT_LABEL_RIGHT_SX}>
           %
         </Typography>
 
         <ResponsiveContainer width="100%" height={400}>
-          <ComposedChart data={data} margin={{ top: 30, right: 30, bottom: 10, left: 10 }}>
+          <ComposedChart data={data} margin={CHART_MARGIN}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
@@ -89,20 +223,39 @@ export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
               tickFormatter={formatXAxisTick}
               tickLine={false}
             />
-            <YAxis yAxisId="left" tickFormatter={(v: number) => formatThousand(v)} />
-            <YAxis yAxisId="right" orientation="right" tickFormatter={(v: number) => `${v}`} />
-            <Tooltip content={<RevenueTooltip />} />
+            <YAxis
+              yAxisId="left"
+              width={LEFT_Y_AXIS_WIDTH}
+              tickMargin={8}
+              tickFormatter={(v: number) => formatRevenueByUnit(v, revenueUnit)}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              width={RIGHT_Y_AXIS_WIDTH}
+              tickMargin={8}
+              tickFormatter={(v: number) => `${v}`}
+            />
+            <Tooltip content={<RevenueTooltip revenueUnit={revenueUnit} />} />
             <Legend
               verticalAlign="top"
               align="left"
-              wrapperStyle={{ paddingLeft: 60, paddingBottom: 8 }}
+              content={<RevenueLegend theme={theme} />}
             />
-            <Bar yAxisId="left" dataKey="revenue" name="每月營收" fill={theme.palette.revenue.main} />
+            <Bar
+              yAxisId="left"
+              dataKey="revenue"
+              name="每月營收"
+              fill={theme.palette.revenue.fill}
+              stroke={theme.palette.revenue.main}
+              strokeWidth={1}
+              maxBarSize={10}
+            />
             <Line
               yAxisId="right"
               type="linear"
               dataKey="yoy"
-              name="單月營收年增率"
+              name="單月營收年增率 (%)"
               stroke={theme.palette.yoy.negative}
               dot={false}
               connectNulls={false}
