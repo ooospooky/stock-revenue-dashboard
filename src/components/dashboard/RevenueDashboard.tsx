@@ -1,5 +1,4 @@
 'use client';
-import { useMemo } from 'react';
 import { Box, Stack, Typography, LinearProgress, Paper } from '@mui/material';
 import { useStockId } from '@/hooks/use-stock-id';
 import { useRange } from '@/hooks/use-range';
@@ -7,6 +6,7 @@ import { useRevenue } from '@/hooks/use-revenue';
 import { useStockList } from '@/hooks/use-stock-list';
 import { getRevenueDateRange } from '@/lib/revenue/get-date-range';
 import { buildRevenueSeries } from '@/lib/revenue/build-revenue-series';
+import type { RevenuePoint, RangePreset } from '@/lib/revenue/types';
 import { StockSelector } from './StockSelector';
 import { RevenueChart } from './RevenueChart';
 import { RevenueTable } from './RevenueTable';
@@ -16,61 +16,68 @@ import { EmptyState } from '../states/EmptyState';
 
 const CARD_SX = { p: { xs: 2, md: 3 } };
 
+type DashboardContentProps = {
+  revenue: ReturnType<typeof useRevenue>;
+  series: RevenuePoint[];
+  stockId: string;
+  range: RangePreset;
+};
+
+const DashboardContent = ({ revenue, series, stockId, range }: DashboardContentProps) => {
+  if (revenue.isPending) {
+    return (
+      <>
+        <Paper variant="outlined" sx={CARD_SX}>
+          <LoadingSkeleton height={400} />
+        </Paper>
+        <Paper variant="outlined" sx={CARD_SX}>
+          <LoadingSkeleton height={200} />
+        </Paper>
+      </>
+    );
+  }
+  if (revenue.data?.status === 'error') {
+    return (
+      <Paper variant="outlined" sx={CARD_SX}>
+        <ErrorState code={revenue.data.code} onRetry={() => revenue.refetch()} />
+      </Paper>
+    );
+  }
+  if (series.length === 0) {
+    return (
+      <Paper variant="outlined" sx={CARD_SX}>
+        <EmptyState stockId={stockId} />
+      </Paper>
+    );
+  }
+  return (
+    <>
+      <Paper variant="outlined" sx={CARD_SX}>
+        <RevenueChart data={series} />
+      </Paper>
+      <Paper variant="outlined" sx={CARD_SX}>
+        <RevenueTable data={series} stockId={stockId} range={range} />
+      </Paper>
+    </>
+  );
+};
+
 export const RevenueDashboard = () => {
   const [stockId] = useStockId();
   const [range] = useRange();
   const stockList = useStockList();
-  const dateRange = useMemo(() => getRevenueDateRange(range, new Date()), [range]);
+  const dateRange = getRevenueDateRange(range, new Date());
   const revenue = useRevenue(stockId, dateRange.fetchStart, dateRange.fetchEnd);
+
+  const series =
+    revenue.data?.status === 'ok'
+      ? buildRevenueSeries(revenue.data.data, dateRange.displayStart, dateRange.displayEnd)
+      : [];
 
   const stockName =
     stockList.data?.status === 'ok'
-      ? (stockList.data.data.find((s) => s.stock_id === stockId)?.stock_name ?? '')
+      ? (stockList.data.data.find((stock) => stock.stock_id === stockId)?.stock_name ?? '')
       : '';
-
-  const series = useMemo(() => {
-    if (revenue.data?.status !== 'ok') return [];
-    return buildRevenueSeries(revenue.data.data, dateRange.displayStart, dateRange.displayEnd);
-  }, [revenue.data, dateRange.displayStart, dateRange.displayEnd]);
-
-  const renderDataCards = () => {
-    if (revenue.isPending) {
-      return (
-        <>
-          <Paper variant="outlined" sx={CARD_SX}>
-            <LoadingSkeleton height={400} />
-          </Paper>
-          <Paper variant="outlined" sx={CARD_SX}>
-            <LoadingSkeleton height={200} />
-          </Paper>
-        </>
-      );
-    }
-    if (revenue.data?.status === 'error') {
-      return (
-        <Paper variant="outlined" sx={CARD_SX}>
-          <ErrorState code={revenue.data.code} onRetry={() => revenue.refetch()} />
-        </Paper>
-      );
-    }
-    if (series.length === 0) {
-      return (
-        <Paper variant="outlined" sx={CARD_SX}>
-          <EmptyState stockId={stockId} />
-        </Paper>
-      );
-    }
-    return (
-      <>
-        <Paper variant="outlined" sx={CARD_SX}>
-          <RevenueChart data={series} />
-        </Paper>
-        <Paper variant="outlined" sx={CARD_SX}>
-          <RevenueTable data={series} stockId={stockId} range={range} />
-        </Paper>
-      </>
-    );
-  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1280, mx: 'auto' }}>
@@ -86,7 +93,7 @@ export const RevenueDashboard = () => {
           </Typography>
         </Paper>
 
-        {renderDataCards()}
+        <DashboardContent revenue={revenue} series={series} stockId={stockId} range={range} />
       </Stack>
     </Box>
   );
