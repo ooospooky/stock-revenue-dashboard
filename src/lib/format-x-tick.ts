@@ -1,6 +1,6 @@
 export const formatXAxisTick = (value: string): string => {
-  if (!value || typeof value !== 'string') return '';
-  const [year, month] = value.split('-');
-  if (month === '01') return year;
-  return '';
+  if (!value) return '';
+  const match = /^(\d{4})-(\d{2})$/.exec(value);
+  if (!match) return '';
+  return match[2] === '01' ? match[1] : '';
 };

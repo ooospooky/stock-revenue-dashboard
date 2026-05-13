@@ -14,4 +14,8 @@ describe('formatXAxisTick', () => {
   it('handles malformed input gracefully', () => {
     expect(formatXAxisTick('')).toBe('');
   });
+
+  it('ignores ISO date strings with day component', () => {
+    expect(formatXAxisTick('2024-01-15')).toBe('');
+  });
 });
