@@ -5,10 +5,12 @@ declare module '@mui/material/styles' {
   interface Palette {
     revenue: { main: string };
     yoy: { positive: string; negative: string };
+    tableStripe: { main: string };
   }
   interface PaletteOptions {
     revenue?: { main: string };
     yoy?: { positive: string; negative: string };
+    tableStripe?: { main: string };
   }
 }
 
@@ -18,6 +20,7 @@ export const theme = createTheme({
     primary: { main: '#1976d2' },
     revenue: { main: '#F4B400' },
     yoy: { positive: '#2E7D32', negative: '#C62828' },
+    tableStripe: { main: '#EAF2FB' },
     background: { default: '#F5F6F8', paper: '#FFFFFF' },
   },
   typography: {
