@@ -33,7 +33,7 @@ export const RevenueDashboard = () => {
     return buildRevenueSeries(revenue.data.data, dateRange.displayStart, dateRange.displayEnd);
   }, [revenue.data, dateRange.displayStart, dateRange.displayEnd]);
 
-  const renderDataBlock = () => {
+  const renderDataCards = () => {
     if (revenue.isPending) {
       return (
         <>
@@ -86,7 +86,7 @@ export const RevenueDashboard = () => {
           </Typography>
         </Paper>
 
-        {renderDataBlock()}
+        {renderDataCards()}
       </Stack>
     </Box>
   );
