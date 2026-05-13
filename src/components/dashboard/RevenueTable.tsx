@@ -10,7 +10,7 @@ const STRIPE_SX = { bgcolor: 'tableStripe.main' };
 const ROW_LABEL_CELL_SX = {
   position: 'sticky',
   left: 0,
-  bgcolor: 'inherit',
+  bgcolor: 'inherit', // inherits the row's stripe color — do not set an explicit value here
   fontWeight: 600,
   zIndex: 2,
   borderRight: '1px solid',
