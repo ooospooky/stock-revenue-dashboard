@@ -51,16 +51,14 @@ const RevenueTooltip = ({
         border: 1,
         borderColor: 'divider',
         p: 1,
-        fontSize: 13,
       }}
     >
-      <div>{label}</div>
-      <div>
-        每月營收：
-        {revenue != null ? formatRevenueByUnit(revenue, revenueUnit) : '-'}{' '}
+      <Typography variant="body2">{label}</Typography>
+      <Typography variant="body2">
+        每月營收：{revenue != null ? formatRevenueByUnit(revenue, revenueUnit) : '-'}{' '}
         {revenueUnit.label}
-      </div>
-      <div>單月營收年增率：{formatYoYPercent(yoy ?? null)} %</div>
+      </Typography>
+      <Typography variant="body2">單月營收年增率：{formatYoYPercent(yoy ?? null)} %</Typography>
     </Box>
   );
 };
