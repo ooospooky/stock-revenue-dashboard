@@ -5,17 +5,6 @@ import type { RangePreset } from '@/lib/revenue/types';
 
 const PRESETS: RangePreset[] = [3, 5, 8];
 
-const SELECT_SX = {
-  bgcolor: 'primary.main',
-  color: 'primary.contrastText',
-  fontWeight: 500,
-  minWidth: 120,
-  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.main' },
-  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.dark' },
-  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.dark' },
-  '& .MuiSelect-icon': { color: 'primary.contrastText' },
-};
-
 export const RangeSelector = () => {
   const [range, setRange] = useRange();
 
@@ -29,7 +18,14 @@ export const RangeSelector = () => {
       value={range}
       onChange={handleChange}
       size="small"
-      sx={SELECT_SX}
+      sx={{
+        bgcolor: 'primary.main',
+        color: 'primary.contrastText',
+        fontWeight: 500,
+        fontSize: '0.875rem',
+        borderRadius: 0.375,
+        '& .MuiSelect-icon': { color: 'primary.contrastText' },
+      }}
       inputProps={{ 'aria-label': '時間範圍' }}
     >
       {PRESETS.map((p) => (
