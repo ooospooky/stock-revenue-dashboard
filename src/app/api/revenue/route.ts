@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { fetchRevenue } from '@/lib/api/finmind';
+import { stockIdSchema } from '@/lib/stock-id';
 
 const QuerySchema = z.object({
-  stockId: z.string().regex(/^\d{4}$/),
+  stockId: stockIdSchema,
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });

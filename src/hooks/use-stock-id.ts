@@ -1,9 +1,6 @@
 'use client';
 import { useQueryState, parseAsString } from 'nuqs';
-import { z } from 'zod';
-
-const STOCK_ID_DEFAULT = '2867';
-const stockIdSchema = z.string().regex(/^\d{4}$/);
+import { STOCK_ID_DEFAULT, stockIdSchema } from '@/lib/stock-id';
 
 export const useStockId = () => {
   const [raw, setRaw] = useQueryState(
