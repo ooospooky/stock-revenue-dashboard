@@ -14,7 +14,7 @@ const SELECT_SX = {
   '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.dark' },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.dark' },
   '& .MuiSelect-icon': { color: 'primary.contrastText' },
-} as const;
+};
 
 export const RangeSelector = () => {
   const [range, setRange] = useRange();
