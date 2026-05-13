@@ -43,13 +43,13 @@ const filterOptions = (
   if (!q) return options;
   const prefix: Option[] = [];
   const contains: Option[] = [];
-  for (const o of options) {
-    if (o.stock_id.startsWith(q)) prefix.push(o);
+  for (const stock of options) {
+    if (stock.stock_id.startsWith(q)) prefix.push(stock);
     else if (
-      o.stock_id.toLowerCase().includes(q) ||
-      o.stock_name.toLowerCase().includes(q)
+      stock.stock_id.toLowerCase().includes(q) ||
+      stock.stock_name.toLowerCase().includes(q)
     ) {
-      contains.push(o);
+      contains.push(stock);
     }
   }
   return [...prefix, ...contains];
@@ -117,7 +117,7 @@ export const StockSelector = () => {
   const [stockId, setStockId] = useStockId();
   const { data, isPending } = useStockList();
   const options: Option[] = data?.status === 'ok' ? data.data : [];
-  const selected = options.find((o) => o.stock_id === stockId) ?? {
+  const selected = options.find((stock) => stock.stock_id === stockId) ?? {
     stock_id: stockId,
     stock_name: '',
   };
@@ -141,7 +141,7 @@ export const StockSelector = () => {
         }}
         slots={{ listbox: VirtualListbox }}
         slotProps={{ listbox: { style: { maxHeight: LIST_MAX_HEIGHT } } }}
-        renderOption={(props, option) => {
+        renderOption={(props, stock) => {
           const { key, ...liProps } = props;
           return (
             <Box
@@ -172,9 +172,9 @@ export const StockSelector = () => {
                   },
               }}
             >
-              {option.stock_name
-                ? `${option.stock_id} ${option.stock_name}`
-                : option.stock_id}
+              {stock.stock_name
+                ? `${stock.stock_id} ${stock.stock_name}`
+                : stock.stock_id}
             </Box>
           );
         }}
