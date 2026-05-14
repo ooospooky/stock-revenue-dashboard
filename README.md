@@ -99,16 +99,34 @@ A single-page dashboard for Taiwan stock monthly revenue, built as a take-home p
 
 專案分為三層：
 
-**Pure data layer** (`src/lib/`)
-框架無關的 TypeScript 函式：`calculateYoY`、`buildRevenueSeries`、`getRevenueDateRange`、format helpers。所有業務邏輯集中於此，可用 Vitest 直接測試，零 React / Next.js 依賴。
+### Pure data layer (`src/lib/`)
 
-**BFF / server** (`src/app/api/`)
-Next.js Route Handler 代理 FinMind API。`FINMIND_TOKEN` 僅存在於 server（`import 'server-only'` + 無 `NEXT_PUBLIC_` 前綴）。回應經 zod 驗證後才回傳 client。`revalidate: 3600` 提供 1 小時邊緣快取。
+框架無關的 TypeScript 純函式：
 
-**Client UI** (`src/components/`, `src/hooks/`)
-TanStack Query hooks 透過 `/api/*` 取資料；URL state 由 nuqs 管理並以 zod fallback 至預設值。每個資料區塊明確處理 loading / error / empty / success 四種狀態。App Router 提供 `error.tsx` / `not-found.tsx` 作為頂層錯誤邊界。
+- `calculateYoY`
+- `buildRevenueSeries`
+- `getRevenueDateRange`
+- format helpers
 
-**目錄結構**
+所有業務邏輯集中於此，可直接使用 Vitest 測試，零 React / Next.js 依賴。
+
+### BFF / Server (`src/app/api/`)
+
+Next.js Route Handlers 作為 BFF，代理 FinMind API：
+
+- `FINMIND_TOKEN` 僅存在 server（`import 'server-only'` + 無 `NEXT_PUBLIC_` 前綴）
+- API 回應經 zod 驗證後才回傳 client
+- `revalidate: 3600` 提供 1 小時快取
+
+### Client UI (`src/components/`, `src/hooks/`)
+
+負責資料取得與 UI 狀態管理：
+
+- TanStack Query 透過 `/api/*` 取資料
+- nuqs 管理 URL state，zod fallback 至預設值
+- 明確處理 loading / error / empty / success 四種狀態
+- App Router 使用 `error.tsx`、`not-found.tsx` 作為頂層錯誤邊界
+  **目錄結構**
 
 ```
 src/
