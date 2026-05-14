@@ -39,11 +39,45 @@ A single-page dashboard for Taiwan stock monthly revenue, built as a take-home p
 - **React 19** — functional components + hooks
 - **TypeScript** — strict mode，禁用 `any` 與不必要 `as`
 - **MUI v9** — Theme + `sx` 唯一樣式策略；`AppRouterCacheProvider` 支援 SSR
-- **TanStack Query v5** — server state、`placeholderData: keepPreviousData` 平滑切換
-- **Recharts** — 雙 Y 軸 `ComposedChart`（bar + line）
+- **TanStack Query v5** - type-safe URL state（`?stockId=2330&range=5`）
+- **Recharts** — Revenue 趨勢圖表呈現
 - **nuqs v2** — URL state（`?stockId=2330&range=5`）
-- **zod v4** — API 回應與 URL 參數驗證
+- **zod v4** — runtime validation 與型別推導
 - **Vitest** — pure data layer 單元測試
+
+---
+
+## Key Decisions
+
+### TanStack Query
+
+選擇 TanStack Query 管理 server state，而非手動使用 `useEffect + useState`。
+
+原因：
+
+- 內建 loading / error / caching 管理
+- `placeholderData: keepPreviousData` 避免切換區間時 UI 閃爍
+- 將 server state 與 local UI state 明確分離
+
+### nuqs
+
+選擇 nuqs 管理 URL state，而非手動同步 `searchParams`。
+
+原因：
+
+- 與 zod 整合，提供型別安全的 URL 解析
+- 保持 dashboard 狀態可分享（`?stockId=2330&range=5`）
+- 避免重複撰寫 URL 同步與 parsing 邏輯
+
+### zod
+
+選擇 zod 作為 runtime validation。
+
+原因：
+
+- TypeScript 型別不會存在於 runtime
+- 避免外部 API 或 URL 參數異常資料直接進入 UI
+- 驗證規則與型別推導共用同一份定義
 
 ---
 
@@ -104,7 +138,7 @@ src/
 部署於 Vercel，與 Next.js App Router 原生整合。
 
 - **環境變數**：`FINMIND_TOKEN`（server-only，不加 `NEXT_PUBLIC_` 前綴）
-- **API 快取**：BFF Route Handler 設 `revalidate: 3600`，將 FinMind 免費方案 600 req/hr 的速率限制隔離在 server 端
+- **API 快取**：BFF Route Handler 設 `revalidate: 3600`，降低對 FinMind API 的重複請求並減少免費方案（600 req/hr）限制影響
 
 ---
 
