@@ -23,9 +23,21 @@ declare module '@mui/material/styles' {
   interface TypographyVariantsOptions {
     fontWeightSemibold?: number;
   }
+  interface ShapeOptions {
+    borderRadiusBadge?: number;
+  }
+  interface Shape {
+    borderRadiusBadge: number;
+  }
+  interface BreakpointOverrides {
+    pageMax: true;
+  }
 }
 
 export const theme = createTheme({
+  breakpoints: {
+    values: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536, pageMax: 1280 },
+  },
   palette: {
     mode: 'light',
     primary: { main: '#1976d2' },
@@ -38,7 +50,7 @@ export const theme = createTheme({
     background: { default: '#F5F6F8', paper: '#FFFFFF' },
   },
   typography: {
-    fontFamily: 'var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif',
+    fontFamily: '"PingFang TC", var(--font-geist-sans), sans-serif',
     fontWeightRegular: 400,
     fontWeightMedium: 500,
     fontWeightSemibold: 600,
@@ -46,5 +58,5 @@ export const theme = createTheme({
     h2: { fontSize: '1.25rem', fontWeight: 600 },
     body2: { fontSize: '0.875rem' },
   },
-  shape: { borderRadius: 8 },
+  shape: { borderRadius: 8, borderRadiusBadge: 3 },
 });
