@@ -24,7 +24,10 @@ import { formatXAxisTick } from '@/lib/format-x-tick';
 import { SectionLabel } from './SectionLabel';
 import { RangeSelector } from './RangeSelector';
 
-type TooltipPayload = { dataKey: 'revenueInThousands' | 'yoy'; value: number | null }[];
+type TooltipPayload = {
+  dataKey: 'revenueInThousands' | 'yoy';
+  value: number | null;
+}[];
 type LegendPayloadItem = {
   dataKey?: string | number;
   value?: string;
@@ -42,7 +45,9 @@ const RevenueTooltip = ({
   revenueUnit: RevenueDisplayUnit;
 }) => {
   if (!active || !payload?.length) return null;
-  const revenue = payload.find((p) => p.dataKey === 'revenueInThousands')?.value;
+  const revenue = payload.find(
+    (p) => p.dataKey === 'revenueInThousands',
+  )?.value;
   const yoy = payload.find((p) => p.dataKey === 'yoy')?.value;
   return (
     <Box
@@ -55,10 +60,13 @@ const RevenueTooltip = ({
     >
       <Typography variant="body2">{label}</Typography>
       <Typography variant="body2">
-        每月營收：{revenue != null ? formatRevenueByUnit(revenue, revenueUnit) : '-'}{' '}
+        每月營收：
+        {revenue != null ? formatRevenueByUnit(revenue, revenueUnit) : '-'}{' '}
         {revenueUnit.label}
       </Typography>
-      <Typography variant="body2">單月營收年增率：{formatYoYPercent(yoy ?? null)} %</Typography>
+      <Typography variant="body2">
+        單月營收年增率：{formatYoYPercent(yoy ?? null)} %
+      </Typography>
     </Box>
   );
 };
@@ -69,35 +77,25 @@ const LEGEND_ITEM_ORDER: Record<'revenueInThousands' | 'yoy', number> = {
 };
 
 const getLegendItemOrder = (dataKey: LegendPayloadItem['dataKey']): number => {
-  if (dataKey === 'revenueInThousands') return LEGEND_ITEM_ORDER.revenueInThousands;
+  if (dataKey === 'revenueInThousands')
+    return LEGEND_ITEM_ORDER.revenueInThousands;
   if (dataKey === 'yoy') return LEGEND_ITEM_ORDER.yoy;
   return Number.MAX_SAFE_INTEGER;
 };
 
 const renderLegendIcon = (entry: LegendPayloadItem, theme: Theme) => {
-  if (entry.dataKey === 'revenueInThousands') {
-    return (
-      <Box
-        component="span"
-        sx={{
-          width: 12,
-          height: 12,
-          borderRadius: 0.5,
-          bgcolor: theme.palette.revenue.main,
-          flexShrink: 0,
-        }}
-      />
-    );
-  }
+  const color =
+    entry.dataKey === 'revenueInThousands'
+      ? theme.palette.revenue.main
+      : theme.palette.yoy.negative;
 
   return (
     <Box
       component="span"
       sx={{
-        width: 14,
-        height: 2,
-        bgcolor: theme.palette.yoy.negative,
-        borderRadius: 999,
+        width: 16,
+        height: 10,
+        bgcolor: color,
         flexShrink: 0,
       }}
     />
@@ -123,7 +121,7 @@ const RevenueLegend = ({
   return (
     <Stack
       direction="row"
-      spacing={2}
+      spacing={1}
       sx={{
         pl: `${CHART_MARGIN.left + LEFT_Y_AXIS_WIDTH}px`,
         pb: 1,
