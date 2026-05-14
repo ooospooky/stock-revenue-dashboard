@@ -10,7 +10,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import { Autocomplete, TextField, Box } from '@mui/material';
+import { Alert, Autocomplete, Box, Skeleton, TextField } from '@mui/material';
 import {
   List,
   type ListImperativeAPI,
@@ -18,11 +18,13 @@ import {
 } from 'react-window';
 import { useStockList } from '@/hooks/use-stock-list';
 import { useStockId } from '@/hooks/use-stock-id';
+import { ErrorState } from '../states/ErrorState';
 
 type Option = { stock_id: string; stock_name: string };
 
 const ROW_HEIGHT = 36;
 const LIST_MAX_HEIGHT = 320;
+const SELECTOR_SX = { width: { xs: '100%', sm: 320 } };
 
 const assignRef = <T,>(ref: Ref<T> | undefined, value: T) => {
   if (typeof ref === 'function') {
@@ -115,19 +117,59 @@ const VirtualListbox = forwardRef<HTMLDivElement, ListboxProps>(
 
 export const StockSelector = () => {
   const [stockId, setStockId] = useStockId();
-  const { data, isPending } = useStockList();
-  const options: Option[] = data?.status === 'ok' ? data.data : [];
+  const stockList = useStockList();
+
+  if (stockList.isPending) {
+    return (
+      <Box sx={SELECTOR_SX}>
+        <Skeleton variant="rounded" height={40} />
+      </Box>
+    );
+  }
+
+  if (stockList.isError) {
+    return (
+      <Box sx={SELECTOR_SX}>
+        <ErrorState code="NETWORK_ERROR" onRetry={() => stockList.refetch()} />
+      </Box>
+    );
+  }
+
+  if (stockList.data?.status === 'error') {
+    return (
+      <Box sx={SELECTOR_SX}>
+        <ErrorState
+          code={stockList.data.code}
+          onRetry={() => stockList.refetch()}
+        />
+      </Box>
+    );
+  }
+
+  const options: Option[] = stockList.data?.data ?? [];
+
+  if (options.length === 0) {
+    return (
+      <Box sx={SELECTOR_SX}>
+        <Alert severity="info">目前沒有可選股票資料，請稍後再試</Alert>
+      </Box>
+    );
+  }
+
   const selected = options.find((stock) => stock.stock_id === stockId) ?? {
     stock_id: stockId,
     stock_name: '',
   };
 
+  const handleChange = (_: unknown, value: Option) => {
+    setStockId(value.stock_id);
+  };
+
   return (
-    <Box sx={{ width: 320 }}>
+    <Box sx={SELECTOR_SX}>
       <Autocomplete
         options={options}
         value={selected}
-        loading={isPending}
         disableClearable
         disableListWrap
         isOptionEqualToValue={(a, b) => a.stock_id === b.stock_id}
@@ -135,10 +177,7 @@ export const StockSelector = () => {
           o.stock_name ? `${o.stock_id} ${o.stock_name}` : o.stock_id
         }
         filterOptions={filterOptions}
-        onChange={(_, value) => {
-          if (!value) return;
-          setStockId(value.stock_id);
-        }}
+        onChange={handleChange}
         slots={{ listbox: VirtualListbox }}
         slotProps={{ listbox: { style: { maxHeight: LIST_MAX_HEIGHT } } }}
         renderOption={(props, stock) => {
