@@ -21,6 +21,7 @@ type DashboardContentProps = {
   revenue: ReturnType<typeof useRevenue>;
   series: RevenuePoint[];
   stockId: string;
+  stockName: string;
   range: RangePreset;
 };
 
@@ -28,6 +29,7 @@ const DashboardContent = ({
   revenue,
   series,
   stockId,
+  stockName,
   range,
 }: DashboardContentProps) => {
   if (revenue.isPending) {
@@ -62,7 +64,7 @@ const DashboardContent = ({
   if (series.length === 0) {
     return (
       <Paper variant="outlined" sx={CARD_SX}>
-        <EmptyState stockId={stockId} />
+        <EmptyState stockId={stockId} stockName={stockName} />
       </Paper>
     );
   }
@@ -140,6 +142,7 @@ export const RevenueDashboard = () => {
           revenue={revenue}
           series={series}
           stockId={stockId}
+          stockName={stockName}
           range={range}
         />
       </Stack>
