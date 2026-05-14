@@ -1,5 +1,6 @@
 'use client';
 import { Box, Stack, Typography, LinearProgress, Paper } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useStockId } from '@/hooks/use-stock-id';
 import { useRange } from '@/hooks/use-range';
 import { useRevenue } from '@/hooks/use-revenue';
@@ -23,7 +24,12 @@ type DashboardContentProps = {
   range: RangePreset;
 };
 
-const DashboardContent = ({ revenue, series, stockId, range }: DashboardContentProps) => {
+const DashboardContent = ({
+  revenue,
+  series,
+  stockId,
+  range,
+}: DashboardContentProps) => {
   if (revenue.isPending) {
     return (
       <>
@@ -39,7 +45,10 @@ const DashboardContent = ({ revenue, series, stockId, range }: DashboardContentP
   if (revenue.data?.status === 'error') {
     return (
       <Paper variant="outlined" sx={CARD_SX}>
-        <ErrorState code={revenue.data.code} onRetry={() => revenue.refetch()} />
+        <ErrorState
+          code={revenue.data.code}
+          onRetry={() => revenue.refetch()}
+        />
       </Paper>
     );
   }
@@ -63,6 +72,7 @@ const DashboardContent = ({ revenue, series, stockId, range }: DashboardContentP
 };
 
 export const RevenueDashboard = () => {
+  const theme = useTheme();
   const [stockId] = useStockId();
   const [range] = useRange();
   const stockList = useStockList();
@@ -71,20 +81,27 @@ export const RevenueDashboard = () => {
 
   const series =
     revenue.data?.status === 'ok'
-      ? buildRevenueSeries(revenue.data.data, dateRange.displayStart, dateRange.displayEnd)
+      ? buildRevenueSeries(
+          revenue.data.data,
+          dateRange.displayStart,
+          dateRange.displayEnd,
+        )
       : [];
 
   const stockName =
     stockList.data?.status === 'ok'
-      ? (stockList.data.data.find((stock) => stock.stock_id === stockId)?.stock_name ?? '')
+      ? (stockList.data.data.find((stock) => stock.stock_id === stockId)
+          ?.stock_name ?? '')
       : '';
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1280, mx: 'auto' }}>
+    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: theme.breakpoints.values.pageMax, mx: 'auto' }}>
       {revenue.isFetching && !revenue.isPending && (
-        <LinearProgress sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1300 }} />
+        <LinearProgress
+          sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: theme.zIndex.modal }}
+        />
       )}
-      <Stack spacing={3}>
+      <Stack spacing={2}>
         <StockSelector />
 
         <Paper variant="outlined" sx={CARD_SX}>
@@ -93,7 +110,12 @@ export const RevenueDashboard = () => {
           </Typography>
         </Paper>
 
-        <DashboardContent revenue={revenue} series={series} stockId={stockId} range={range} />
+        <DashboardContent
+          revenue={revenue}
+          series={series}
+          stockId={stockId}
+          range={range}
+        />
       </Stack>
     </Box>
   );
