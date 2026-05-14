@@ -43,16 +43,14 @@ const filterOptions = (
 ): Option[] => {
   const q = inputValue.trim().toLowerCase();
   if (!q) return options;
+  const tokens = q.split(/\s+/);
   const prefix: Option[] = [];
   const contains: Option[] = [];
   for (const stock of options) {
-    if (stock.stock_id.startsWith(q)) prefix.push(stock);
-    else if (
-      stock.stock_id.toLowerCase().includes(q) ||
-      stock.stock_name.toLowerCase().includes(q)
-    ) {
-      contains.push(stock);
-    }
+    const combined = `${stock.stock_id} ${stock.stock_name.toLowerCase()}`;
+    if (!tokens.every((t) => combined.includes(t))) continue;
+    if (stock.stock_id.startsWith(tokens[0])) prefix.push(stock);
+    else contains.push(stock);
   }
   return [...prefix, ...contains];
 };
