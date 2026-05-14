@@ -155,7 +155,7 @@ export const StockSelector = () => {
   }
 
   const selected = options.find((stock) => stock.stock_id === stockId) ?? {
-    stock_id: stockId,
+    stock_id: stockId ?? '',
     stock_name: '',
   };
 

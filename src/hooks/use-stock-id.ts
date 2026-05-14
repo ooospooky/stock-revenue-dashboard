@@ -8,6 +8,6 @@ export const useStockId = () => {
     parseAsString.withDefault(STOCK_ID_DEFAULT),
   );
   const parsed = stockIdSchema.safeParse(raw);
-  const value = parsed.success ? parsed.data : STOCK_ID_DEFAULT;
-  return [value, setRaw] as const;
+  const value = raw === null ? STOCK_ID_DEFAULT : parsed.success ? parsed.data : null;
+  return [value, setRaw, raw] as const;
 };

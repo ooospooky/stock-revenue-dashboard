@@ -80,11 +80,13 @@ const DashboardContent = ({
 
 export const RevenueDashboard = () => {
   const theme = useTheme();
-  const [stockId] = useStockId();
+  const [stockId, , rawStockId] = useStockId();
   const [range] = useRange();
   const stockList = useStockList();
   const dateRange = getRevenueDateRange(range, new Date());
-  const revenue = useRevenue(stockId, dateRange.fetchStart, dateRange.fetchEnd);
+  const revenue = useRevenue(stockId ?? '', dateRange.fetchStart, dateRange.fetchEnd, {
+    enabled: stockId !== null,
+  });
 
   const series =
     revenue.data?.status === 'ok'
@@ -100,6 +102,19 @@ export const RevenueDashboard = () => {
       ? (stockList.data.data.find((stock) => stock.stock_id === stockId)
           ?.stock_name ?? '')
       : '';
+
+  if (stockId === null) {
+    return (
+      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: theme.breakpoints.values.pageMax, mx: 'auto' }}>
+        <Stack spacing={2}>
+          <StockSelector />
+          <Paper variant="outlined" sx={CARD_SX}>
+            <EmptyState stockId={rawStockId ?? ''} invalid />
+          </Paper>
+        </Stack>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: theme.breakpoints.values.pageMax, mx: 'auto' }}>

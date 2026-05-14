@@ -13,10 +13,16 @@ const fetchRevenueRaw = async (
   return fetchApiResponse(`/api/revenue?${params}`);
 };
 
-export const useRevenue = (stockId: string, startDate: string, endDate: string) =>
+export const useRevenue = (
+  stockId: string,
+  startDate: string,
+  endDate: string,
+  options?: { enabled?: boolean },
+) =>
   useQuery({
     queryKey: ['revenue', stockId, startDate, endDate],
     queryFn: () => fetchRevenueRaw(stockId, startDate, endDate),
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
