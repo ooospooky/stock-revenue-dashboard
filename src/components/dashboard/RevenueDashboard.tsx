@@ -1,5 +1,5 @@
 'use client';
-import { Box, Stack, Typography, LinearProgress, Paper } from '@mui/material';
+import { Box, Skeleton, Stack, Typography, LinearProgress, Paper } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useStockId } from '@/hooks/use-stock-id';
 import { useRange } from '@/hooks/use-range';
@@ -127,9 +127,13 @@ export const RevenueDashboard = () => {
         <StockSelector />
 
         <Paper variant="outlined" sx={CARD_SX}>
-          <Typography variant="h2">
-            {stockName || '－'} ({stockId})
-          </Typography>
+          {stockList.isPending ? (
+            <Skeleton variant="text" width={200} sx={{ fontSize: 'h2.fontSize' }} />
+          ) : (
+            <Typography variant="h2">
+              {stockName ? `${stockName} (${stockId})` : `(${stockId})`}
+            </Typography>
+          )}
         </Paper>
 
         <DashboardContent
