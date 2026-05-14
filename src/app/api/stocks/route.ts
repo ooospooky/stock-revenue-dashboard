@@ -4,6 +4,7 @@ import { fetchStockInfo } from '@/lib/api/finmind';
 // These categories have no monthly revenue data (indices, ETFs, depositary receipts, etc.)
 const EXCLUDED_INDUSTRY_CATEGORIES = new Set([
   'ETF',
+  '上櫃ETF',
   '上櫃指數股票型基金(ETF)',
   'Index',
   '大盤',
