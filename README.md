@@ -11,7 +11,7 @@ A single-page dashboard for Taiwan stock monthly revenue, built as a take-home p
 **環境需求**
 
 - Node.js 20+
-- pnpm 9+（若尚未安裝：`corepack enable` 或 `npm i -g pnpm`）
+- pnpm 9+
 
 **步驟**
 
@@ -27,7 +27,7 @@ A single-page dashboard for Taiwan stock monthly revenue, built as a take-home p
 | `pnpm dev`       | 啟動開發伺服器                       |
 | `pnpm build`     | Production build                     |
 | `pnpm start`     | 啟動 production server（需先 build） |
-| `pnpm typecheck` | TypeScript 嚴格型別檢查              |
+| `pnpm typecheck` | TypeScript 型別檢查                  |
 | `pnpm lint`      | ESLint                               |
 | `pnpm test:run`  | 執行 Vitest（48 cases）              |
 
