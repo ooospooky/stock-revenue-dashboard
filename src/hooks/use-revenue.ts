@@ -1,5 +1,6 @@
 'use client';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { fetchApiResponse } from '@/lib/api/client-fetch';
 import type { ApiResponse } from '@/lib/api/types';
 import type { RawRevenueRow } from '@/lib/revenue/types';
 
@@ -9,8 +10,7 @@ const fetchRevenueRaw = async (
   endDate: string,
 ): Promise<ApiResponse<RawRevenueRow[]>> => {
   const params = new URLSearchParams({ stockId, startDate, endDate });
-  const res = await fetch(`/api/revenue?${params}`);
-  return res.json();
+  return fetchApiResponse(`/api/revenue?${params}`);
 };
 
 export const useRevenue = (stockId: string, startDate: string, endDate: string) =>

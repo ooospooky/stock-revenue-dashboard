@@ -42,6 +42,13 @@ const DashboardContent = ({
       </>
     );
   }
+  if (revenue.isError) {
+    return (
+      <Paper variant="outlined" sx={CARD_SX}>
+        <ErrorState code="NETWORK_ERROR" onRetry={() => revenue.refetch()} />
+      </Paper>
+    );
+  }
   if (revenue.data?.status === 'error') {
     return (
       <Paper variant="outlined" sx={CARD_SX}>
