@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import type { SxProps, Theme } from '@mui/material/styles';
-import { useTheme } from '@mui/material/styles';
 import {
   Box,
   Stack,
@@ -63,23 +62,48 @@ const TABLE_SX = {
   borderSpacing: 0,
 } satisfies SxProps<Theme>;
 
+const ROW_LABEL_CELL_SX = {
+  position: 'sticky',
+  left: 0,
+  minWidth: ROW_LABEL_COLUMN_WIDTH,
+  width: ROW_LABEL_COLUMN_WIDTH,
+  maxWidth: ROW_LABEL_COLUMN_WIDTH,
+  fontWeight: (theme: Theme) => theme.typography.fontWeightMedium,
+  zIndex: 2,
+  borderRight: '1px solid',
+  borderColor: 'divider',
+  whiteSpace: 'nowrap',
+  pr: 2,
+} satisfies SxProps<Theme>;
+
+const DATA_CELL_SX = {
+  textAlign: 'right',
+  minWidth: 90,
+  borderRight: '1px solid',
+  borderColor: 'divider',
+  whiteSpace: 'nowrap',
+  px: 2.25,
+  py: 1.5,
+} satisfies SxProps<Theme>;
+
+const LAST_CELL_SX = {
+  ...DATA_CELL_SX,
+  borderRight: 'none',
+  px: 2.625,
+  py: 1.5,
+} satisfies SxProps<Theme>;
+
 const RevenueTableRowItem = ({
   data,
   row,
-  rowLabelCellSx,
-  dataCellSx,
-  lastCellSx,
 }: {
   data: RevenuePoint[];
   row: RevenueTableRowConfig;
-  rowLabelCellSx: SxProps<Theme>;
-  dataCellSx: SxProps<Theme>;
-  lastCellSx: SxProps<Theme>;
 }) => (
   <TableRow sx={row.isStriped ? { bgcolor: 'tableStripe.main' } : undefined}>
     <TableCell
       sx={{
-        ...rowLabelCellSx,
+        ...ROW_LABEL_CELL_SX,
         bgcolor: row.isStriped ? 'tableStripe.main' : 'background.paper',
         boxShadow: (theme) => `1px 0 0 ${theme.palette.divider}`,
       }}
@@ -90,7 +114,7 @@ const RevenueTableRowItem = ({
       <TableCell
         key={`${row.id}-${point.date}`}
         sx={{
-          ...(index === data.length - 1 ? lastCellSx : dataCellSx),
+          ...(index === data.length - 1 ? LAST_CELL_SX : DATA_CELL_SX),
           fontWeight: row.dataCellFontWeight,
         }}
       >
@@ -101,40 +125,8 @@ const RevenueTableRowItem = ({
 );
 
 export const RevenueTable = ({ data, stockId, range }: RevenueTableProps) => {
-  const theme = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
   const latestDate = data[data.length - 1]?.date;
-
-  const rowLabelCellSx = {
-    position: 'sticky',
-    left: 0,
-    minWidth: ROW_LABEL_COLUMN_WIDTH,
-    width: ROW_LABEL_COLUMN_WIDTH,
-    maxWidth: ROW_LABEL_COLUMN_WIDTH,
-    fontWeight: theme.typography.fontWeightMedium,
-    zIndex: 2,
-    borderRight: '1px solid',
-    borderColor: 'divider',
-    whiteSpace: 'nowrap',
-    pr: 2,
-  } satisfies SxProps<Theme>;
-
-  const dataCellSx = {
-    textAlign: 'right',
-    minWidth: 90,
-    borderRight: '1px solid',
-    borderColor: 'divider',
-    whiteSpace: 'nowrap',
-    px: 2.25,
-    py: 1.5,
-  } satisfies SxProps<Theme>;
-
-  const lastCellSx = {
-    ...dataCellSx,
-    borderRight: 'none',
-    px: 2.625,
-    py: 1.5,
-  } satisfies SxProps<Theme>;
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -151,14 +143,7 @@ export const RevenueTable = ({ data, stockId, range }: RevenueTableProps) => {
         <Table size="small" sx={TABLE_SX}>
           <TableBody>
             {TABLE_ROWS.map((row) => (
-              <RevenueTableRowItem
-                key={row.id}
-                data={data}
-                row={row}
-                rowLabelCellSx={rowLabelCellSx}
-                dataCellSx={dataCellSx}
-                lastCellSx={lastCellSx}
-              />
+              <RevenueTableRowItem key={row.id} data={data} row={row} />
             ))}
           </TableBody>
         </Table>
