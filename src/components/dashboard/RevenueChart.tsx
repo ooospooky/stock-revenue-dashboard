@@ -246,6 +246,7 @@ export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
               stroke={theme.palette.revenue.main}
               strokeWidth={1}
               maxBarSize={10}
+              isAnimationActive={false}
             />
             <Line
               yAxisId="right"
