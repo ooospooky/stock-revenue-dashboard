@@ -40,7 +40,7 @@ Vercel — one-click deploy. Set `FINMIND_TOKEN` as an environment variable in t
 ## Testing
 
 ```bash
-pnpm test:run   # unit tests (pure data layer, 24 cases)
+pnpm test:run   # Vitest suite (48 cases)
 pnpm typecheck  # TypeScript strict check
 pnpm lint       # ESLint
 pnpm build      # production build verification
@@ -53,7 +53,6 @@ Integration tests are deferred. First candidate to add: the "switch range" flow 
 - **Custom date range** — FinMind API supports `start_date`/`end_date`; UI deferred. Considerations: DateRangePicker YoY-lookback semantics, MUI Pro licence, take-home scope.
 - **Dark mode** — MUI theme is explicitly `mode: 'light'`; the `prefers-color-scheme` media query was removed from `globals.css`.
 - **i18n** — UI is in Traditional Chinese; internationalisation not in scope.
-- **Stock list virtualisation** — Current implementation shows the first 200 of ~3700 entries on open (full-text filter runs on keystroke). Upgrade path: MUI Autocomplete `ListboxComponent` + `react-window` if open-time exceeds 300ms in practice.
 - **Integration tests** — See Testing section above.
 
 ## Decisions and Rationale
