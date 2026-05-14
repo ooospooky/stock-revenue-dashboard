@@ -255,6 +255,7 @@ export const RevenueChart = ({ data }: { data: RevenuePoint[] }) => {
               stroke={theme.palette.yoy.negative}
               dot={false}
               connectNulls={false}
+              isAnimationActive={false}
             />
           </ComposedChart>
         </ResponsiveContainer>
